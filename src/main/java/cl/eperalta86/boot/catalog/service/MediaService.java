@@ -18,7 +18,6 @@ public class MediaService {
         this.repository = repository;
     }
 
-    // Read-only optimiza el rendimiento en algunas BD
     @Transactional(readOnly = true) 
     public List<MediaItem> findAll() {
         return repository.findAll();
