@@ -18,6 +18,8 @@ public class MediaService {
         this.repository = repository;
     }
 
+    // Spring Data JPA define los métodos.
+
     @Transactional(readOnly = true) 
     public List<MediaItem> findAll() {
         return repository.findAll();
@@ -28,5 +30,9 @@ public class MediaService {
 
         MediaItem newItem = new MediaItem(title, type, status);
         return repository.save(newItem);
+    }
+
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }
