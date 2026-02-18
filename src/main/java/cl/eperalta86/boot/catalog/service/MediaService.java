@@ -35,4 +35,10 @@ public class MediaService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public MediaItem findById(Long id) {
+        return repository.findById(id)
+        .orElseThrow(() -> new RuntimeException("MediaItem no encontrado: " + id));
+    }
 }

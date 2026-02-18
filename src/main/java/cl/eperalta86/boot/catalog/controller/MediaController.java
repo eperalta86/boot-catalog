@@ -27,6 +27,11 @@ public class MediaController {
         return service.findAll();
     }
 
+    @GetMapping("/{id}")
+        public MediaItem getById(@PathVariable Long id) {
+        return service.findById(id);
+    }
+
     public record CreateMediaRequest(String title, MediaType type, MediaStatus status) {
     }
 

@@ -3,6 +3,8 @@ package cl.eperalta86.boot.catalog.domain;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "media_images")
 public class MediaImage {
@@ -29,6 +31,7 @@ public class MediaImage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "media_item_id", nullable = false)
+    @JsonIgnore
     private MediaItem mediaItem;
 
     @PrePersist
