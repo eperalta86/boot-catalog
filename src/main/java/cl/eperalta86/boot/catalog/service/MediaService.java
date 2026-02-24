@@ -1,9 +1,10 @@
 package cl.eperalta86.boot.catalog.service;
 
 import cl.eperalta86.boot.catalog.domain.MediaItem;
-import cl.eperalta86.boot.catalog.domain.MediaItem.MediaType;
-import cl.eperalta86.boot.catalog.repository.MediaItemRepository;
 import cl.eperalta86.boot.catalog.domain.MediaItem.MediaStatus;
+import cl.eperalta86.boot.catalog.domain.Platform;
+import cl.eperalta86.boot.catalog.repository.MediaItemRepository;
+import cl.eperalta86.boot.catalog.repository.PlatformRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,22 +14,24 @@ import java.util.List;
 public class MediaService {
 
     private final MediaItemRepository repository;
+    private final PlatformRepository platformRepository;
 
-    public MediaService(MediaItemRepository repository) {
+    public MediaService(MediaItemRepository repository, PlatformRepository platformRepository) {
         this.repository = repository;
+        this.platformRepository = platformRepository;
     }
 
-    // Spring Data JPA define los métodos.
-
-    @Transactional(readOnly = true) 
+    @Transactional(readOnly = true)
     public List<MediaItem> findAll() {
         return repository.findAll();
     }
 
     @Transactional
-    public MediaItem create(String title, MediaType type, MediaStatus status) {
+    public MediaItem create(String title, Long platformId, MediaStatus status) {
+        Platform platform = platformRepository.findById(platformId)
+                .orElseThrow(() -> new RuntimeException("Plataforma no encontrada: " + platformId));
 
-        MediaItem newItem = new MediaItem(title, type, status);
+        MediaItem newItem = new MediaItem(title, platform, status);
         return repository.save(newItem);
     }
 
@@ -39,6 +42,6 @@ public class MediaService {
     @Transactional(readOnly = true)
     public MediaItem findById(Long id) {
         return repository.findById(id)
-        .orElseThrow(() -> new RuntimeException("MediaItem no encontrado: " + id));
+                .orElseThrow(() -> new RuntimeException("MediaItem no encontrado: " + id));
     }
 }

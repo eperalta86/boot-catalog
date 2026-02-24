@@ -16,42 +16,72 @@ public class MediaItem {
     @Column(nullable = false)
     private String title;
 
-    @Enumerated(EnumType.STRING)
-    private MediaType type; // ENUM: GAME, MOVIE, SERIES
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "platform_id", nullable = false)
+    private Platform platform;
 
     @Enumerated(EnumType.STRING)
-    private MediaStatus status; // ENUM: BACKLOG, IN_PROGRESS, FINISHED
+    private MediaStatus status;
 
     private LocalDate releaseDate;
 
     @OneToMany(mappedBy = "mediaItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MediaImage> images = new ArrayList<>();
 
-    public MediaItem() {}
+    public MediaItem() {
+    }
 
-    public MediaItem(String title, MediaType type, MediaStatus status) {
+    public MediaItem(String title, Platform platform, MediaStatus status) {
         this.title = title;
-        this.type = type;
+        this.platform = platform;
         this.status = status;
     }
-    
-    public Long getId() { return id; }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Long getId() {
+        return id;
+    }
 
-    public List<MediaImage> getImages() { return images; }
-    public void setImages(List<MediaImage> images) { this.images = images; }
-    
-    public MediaType getType() { return type; }
-    public void setType(MediaType type) { this.type = type; }
+    public String getTitle() {
+        return title;
+    }
 
-    public MediaStatus getStatus() { return status; }
-    public void setStatus(MediaStatus status) { this.status = status; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public LocalDate getReleaseDate() { return releaseDate; }
-    public void setReleaseDate(LocalDate releaseDate) { this.releaseDate = releaseDate; }
+    public Platform getPlatform() {
+        return platform;
+    }
 
-    public enum MediaType { GAME, MOVIE, SERIES }
-    public enum MediaStatus { BACKLOG, IN_PROGRESS, FINISHED }
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
+
+    public MediaStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MediaStatus status) {
+        this.status = status;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public List<MediaImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<MediaImage> images) {
+        this.images = images;
+    }
+
+    public enum MediaStatus {
+        BACKLOG, IN_PROGRESS, FINISHED
+    }
 }

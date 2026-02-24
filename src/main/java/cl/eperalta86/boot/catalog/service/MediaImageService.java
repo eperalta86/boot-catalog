@@ -25,8 +25,8 @@ public class MediaImageService {
     private final Path uploadDir;
 
     public MediaImageService(MediaImageRepository imageRepository,
-                             MediaItemRepository mediaItemRepository,
-                             @Value("${app.upload.dir:uploads}") String uploadDir) {
+            MediaItemRepository mediaItemRepository,
+            @Value("${app.upload.dir:uploads}") String uploadDir) {
 
         this.imageRepository = imageRepository;
         this.mediaItemRepository = mediaItemRepository;
@@ -41,7 +41,14 @@ public class MediaImageService {
     @Transactional
     public MediaImage upload(Long mediaItemId, ImageType imageType, MultipartFile file) throws IOException {
 
-        MediaItem mediaItem = mediaItemRepository.findById(mediaItemId).orElseThrow(() -> new RuntimeException("MediaItem no encontrado: " + mediaItemId));
+        MediaItem mediaItem = mediaItemRepository.findById(mediaItemId)
+                .orElseThrow(() -> new RuntimeException("MediaItem no encontrado: " + mediaItemId));
+
+        // Validar que no exista ya una imagen de este tipo para este item
+        if (imageRepository.existsByMediaItemIdAndImageType(mediaItemId, imageType)) {
+            throw new RuntimeException(
+                    "Ya existe una imagen de tipo " + imageType + " para este item. Elimínala primero.");
+        }
 
         // Crear directorio si no existe: uploads/{mediaItemId}/
         Path itemDir = uploadDir.resolve(String.valueOf(mediaItemId));
@@ -69,7 +76,8 @@ public class MediaImageService {
 
     @Transactional
     public void delete(Long imageId) throws IOException {
-        MediaImage image = imageRepository.findById(imageId).orElseThrow(() -> new RuntimeException("Imagen no encontrada: " + imageId));
+        MediaImage image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new RuntimeException("Imagen no encontrada: " + imageId));
 
         // Eliminar archivo del disco
         Files.deleteIfExists(Paths.get(image.getFilePath()));

@@ -1,7 +1,6 @@
 package cl.eperalta86.boot.catalog.controller;
 
 import cl.eperalta86.boot.catalog.domain.MediaItem;
-import cl.eperalta86.boot.catalog.domain.MediaItem.MediaType;
 import cl.eperalta86.boot.catalog.domain.MediaItem.MediaStatus;
 import cl.eperalta86.boot.catalog.service.MediaService;
 
@@ -12,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/media")
-// Para angular.
 @CrossOrigin(origins = "http://localhost:4200")
 public class MediaController {
 
@@ -28,20 +26,20 @@ public class MediaController {
     }
 
     @GetMapping("/{id}")
-        public MediaItem getById(@PathVariable Long id) {
+    public MediaItem getById(@PathVariable Long id) {
         return service.findById(id);
     }
 
-    public record CreateMediaRequest(String title, MediaType type, MediaStatus status) {
+    public record CreateMediaRequest(String title, Long platformId, MediaStatus status) {
     }
 
     @PostMapping
     public MediaItem create(@RequestBody CreateMediaRequest request) {
-        return service.create(request.title(), request.type(), request.status());
+        return service.create(request.title(), request.platformId(), request.status());
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT) // 204 No Content es el estándar para borrados
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
