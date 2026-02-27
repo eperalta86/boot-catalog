@@ -3,6 +3,7 @@ package cl.eperalta86.boot.catalog.service;
 import cl.eperalta86.boot.catalog.domain.MediaItem;
 import cl.eperalta86.boot.catalog.domain.MediaItem.MediaStatus;
 import cl.eperalta86.boot.catalog.domain.Platform;
+import cl.eperalta86.boot.catalog.exception.ResourceNotFoundException;
 import cl.eperalta86.boot.catalog.repository.MediaItemRepository;
 import cl.eperalta86.boot.catalog.repository.PlatformRepository;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class MediaService {
     @Transactional
     public MediaItem create(String title, Long platformId, MediaStatus status) {
         Platform platform = platformRepository.findById(platformId)
-                .orElseThrow(() -> new RuntimeException("Plataforma no encontrada: " + platformId));
+                .orElseThrow(() -> new ResourceNotFoundException("Plataforma no encontrada: " + platformId));
 
         MediaItem newItem = new MediaItem(title, platform, status);
         return repository.save(newItem);
@@ -42,6 +43,6 @@ public class MediaService {
     @Transactional(readOnly = true)
     public MediaItem findById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("MediaItem no encontrado: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("MediaItem no encontrado: " + id));
     }
 }

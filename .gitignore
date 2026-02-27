@@ -86,3 +86,8 @@ logs/
 # =========================
 *.orig
 
+# =========================
+# Upload de archivos (generados en runtime)
+# =========================
+uploads/
+

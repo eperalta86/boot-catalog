@@ -32,26 +32,22 @@ public class MediaImageController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public MediaImage upload(@PathVariable Long mediaItemId,
-                             @RequestParam("imageType") ImageType imageType,
-                             @RequestParam("file") MultipartFile file) throws IOException {
+            @RequestParam("imageType") ImageType imageType,
+            @RequestParam("file") MultipartFile file) throws IOException {
         return service.upload(mediaItemId, imageType, file);
     }
 
     @DeleteMapping("/{imageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long mediaItemId,
-                       @PathVariable Long imageId) throws IOException {
+            @PathVariable Long imageId) throws IOException {
         service.delete(imageId);
     }
 
     @GetMapping("/{imageId}/file")
     public byte[] getFile(@PathVariable Long mediaItemId,
-                          @PathVariable Long imageId) throws IOException {
-        MediaImage image = service.findByMediaItemId(mediaItemId).stream()
-                .filter(img -> img.getId().equals(imageId))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
-
+            @PathVariable Long imageId) throws IOException {
+        MediaImage image = service.findById(imageId);
         return Files.readAllBytes(Paths.get(image.getFilePath()));
     }
 }

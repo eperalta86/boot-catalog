@@ -3,6 +3,8 @@ package cl.eperalta86.boot.catalog.service;
 import cl.eperalta86.boot.catalog.domain.ImageType;
 import cl.eperalta86.boot.catalog.domain.MediaImage;
 import cl.eperalta86.boot.catalog.domain.MediaItem;
+import cl.eperalta86.boot.catalog.exception.BusinessException;
+import cl.eperalta86.boot.catalog.exception.ResourceNotFoundException;
 import cl.eperalta86.boot.catalog.repository.MediaImageRepository;
 import cl.eperalta86.boot.catalog.repository.MediaItemRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,27 +44,22 @@ public class MediaImageService {
     public MediaImage upload(Long mediaItemId, ImageType imageType, MultipartFile file) throws IOException {
 
         MediaItem mediaItem = mediaItemRepository.findById(mediaItemId)
-                .orElseThrow(() -> new RuntimeException("MediaItem no encontrado: " + mediaItemId));
+                .orElseThrow(() -> new ResourceNotFoundException("MediaItem no encontrado: " + mediaItemId));
 
-        // Validar que no exista ya una imagen de este tipo para este item
         if (imageRepository.existsByMediaItemIdAndImageType(mediaItemId, imageType)) {
-            throw new RuntimeException(
+            throw new BusinessException(
                     "Ya existe una imagen de tipo " + imageType + " para este item. Elimínala primero.");
         }
 
-        // Crear directorio si no existe: uploads/{mediaItemId}/
         Path itemDir = uploadDir.resolve(String.valueOf(mediaItemId));
         Files.createDirectories(itemDir);
 
-        // Generar nombre único para evitar colisiones
         String extension = getExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID() + extension;
 
-        // Guardar archivo en disco
         Path filePath = itemDir.resolve(fileName);
         Files.copy(file.getInputStream(), filePath);
 
-        // Crear registro en BD
         MediaImage image = new MediaImage();
         image.setImageType(imageType);
         image.setFilePath(filePath.toString());
@@ -77,12 +74,9 @@ public class MediaImageService {
     @Transactional
     public void delete(Long imageId) throws IOException {
         MediaImage image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new RuntimeException("Imagen no encontrada: " + imageId));
+                .orElseThrow(() -> new ResourceNotFoundException("Imagen no encontrada: " + imageId));
 
-        // Eliminar archivo del disco
         Files.deleteIfExists(Paths.get(image.getFilePath()));
-
-        // Eliminar registro de BD
         imageRepository.delete(image);
     }
 
@@ -91,5 +85,11 @@ public class MediaImageService {
             return "";
         }
         return fileName.substring(fileName.lastIndexOf("."));
+    }
+
+    @Transactional(readOnly = true)
+    public MediaImage findById(Long imageId) {
+        return imageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Imagen no encontrada: " + imageId));
     }
 }
