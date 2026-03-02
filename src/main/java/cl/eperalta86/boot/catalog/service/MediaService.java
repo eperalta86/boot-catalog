@@ -8,8 +8,8 @@ import cl.eperalta86.boot.catalog.repository.MediaItemRepository;
 import cl.eperalta86.boot.catalog.repository.PlatformRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class MediaService {
@@ -22,9 +22,9 @@ public class MediaService {
         this.platformRepository = platformRepository;
     }
 
-    @Transactional(readOnly = true)
-    public List<MediaItem> findAll() {
-        return repository.findAll();
+   @Transactional(readOnly = true)
+    public Page<MediaItem> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Transactional
@@ -36,8 +36,11 @@ public class MediaService {
         return repository.save(newItem);
     }
 
+    @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+        MediaItem item = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MediaItem no encontrado: " + id));
+        repository.delete(item);
     }
 
     @Transactional(readOnly = true)

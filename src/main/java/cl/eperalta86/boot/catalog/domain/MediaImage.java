@@ -1,13 +1,10 @@
 package cl.eperalta86.boot.catalog.domain;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "media_images")
-public class MediaImage {
+public class MediaImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,20 +23,9 @@ public class MediaImage {
 
     private String contentType;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime uploadedAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "media_item_id", nullable = false)
-    @JsonIgnore
     private MediaItem mediaItem;
-
-    @PrePersist
-    protected void onCreate() {
-        uploadedAt = LocalDateTime.now();
-    }
-
-    // Getters y Setters
 
     public Long getId() {
         return id;
@@ -87,14 +73,6 @@ public class MediaImage {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
-    }
-
-    public LocalDateTime getUploadedAt() {
-        return uploadedAt;
-    }
-
-    public void setUploadedAt(LocalDateTime uploadedAt) {
-        this.uploadedAt = uploadedAt;
     }
 
     public MediaItem getMediaItem() {

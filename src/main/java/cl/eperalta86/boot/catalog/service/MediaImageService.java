@@ -56,21 +56,26 @@ public class MediaImageService {
 
         String extension = getExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID() + extension;
-
         Path filePath = itemDir.resolve(fileName);
+
         Files.copy(file.getInputStream(), filePath);
 
-        MediaImage image = new MediaImage();
-        image.setImageType(imageType);
-        image.setFilePath(filePath.toString());
-        image.setOriginalFileName(file.getOriginalFilename());
-        image.setFileSize(file.getSize());
-        image.setContentType(file.getContentType());
-        image.setMediaItem(mediaItem);
+        try {
+            MediaImage image = new MediaImage();
+            image.setImageType(imageType);
+            image.setFilePath(filePath.toString());
+            image.setOriginalFileName(file.getOriginalFilename());
+            image.setFileSize(file.getSize());
+            image.setContentType(file.getContentType());
+            image.setMediaItem(mediaItem);
 
-        return imageRepository.save(image);
+            return imageRepository.save(image);
+        } catch (Exception e) {
+            Files.deleteIfExists(filePath);
+            throw e;
+        }
     }
-
+    
     @Transactional
     public void delete(Long imageId) throws IOException {
         MediaImage image = imageRepository.findById(imageId)

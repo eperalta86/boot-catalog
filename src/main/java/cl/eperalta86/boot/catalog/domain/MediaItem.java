@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "media_items")
-public class MediaItem {
+public class MediaItem extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

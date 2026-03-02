@@ -1,19 +1,19 @@
 package cl.eperalta86.boot.catalog.domain;
 
 public enum ImageType {
-    // EMPAQUE / CAJA
+    //caja
     COVER,
     BACK_COVER,
     SPINE,
     
-    // MEDIA FÍSICA
+    //media fisica
     MEDIA,
     TOP,
     SCREENSHOT,
     
-    // DOCUMENTACIÓN
+    //manual
     MANUAL,
     
-    // OTROS
+    //otros
     OTHER
 }

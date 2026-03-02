@@ -1,7 +1,7 @@
 package cl.eperalta86.boot.catalog.controller;
 
 import cl.eperalta86.boot.catalog.domain.ImageType;
-import cl.eperalta86.boot.catalog.domain.MediaImage;
+import cl.eperalta86.boot.catalog.dto.MediaImageResponse;
 import cl.eperalta86.boot.catalog.service.MediaImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/media/{mediaItemId}/images")
-@CrossOrigin(origins = "http://localhost:4200")
 public class MediaImageController {
 
     private final MediaImageService service;
@@ -25,16 +24,18 @@ public class MediaImageController {
     }
 
     @GetMapping
-    public List<MediaImage> getAll(@PathVariable Long mediaItemId) {
-        return service.findByMediaItemId(mediaItemId);
+    public List<MediaImageResponse> getAll(@PathVariable Long mediaItemId) {
+        return service.findByMediaItemId(mediaItemId).stream()
+                .map(MediaImageResponse::from)
+                .toList();
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public MediaImage upload(@PathVariable Long mediaItemId,
+    public MediaImageResponse upload(@PathVariable Long mediaItemId,
             @RequestParam("imageType") ImageType imageType,
             @RequestParam("file") MultipartFile file) throws IOException {
-        return service.upload(mediaItemId, imageType, file);
+        return MediaImageResponse.from(service.upload(mediaItemId, imageType, file));
     }
 
     @DeleteMapping("/{imageId}")
@@ -47,7 +48,6 @@ public class MediaImageController {
     @GetMapping("/{imageId}/file")
     public byte[] getFile(@PathVariable Long mediaItemId,
             @PathVariable Long imageId) throws IOException {
-        MediaImage image = service.findById(imageId);
-        return Files.readAllBytes(Paths.get(image.getFilePath()));
+        return Files.readAllBytes(Paths.get(service.findById(imageId).getFilePath()));
     }
 }
