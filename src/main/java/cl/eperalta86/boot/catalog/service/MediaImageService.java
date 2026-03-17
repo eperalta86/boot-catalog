@@ -25,6 +25,7 @@ public class MediaImageService {
     private final MediaImageRepository imageRepository;
     private final MediaItemRepository mediaItemRepository;
     private final Path uploadDir;
+    private static final List<String> ALLOWED_MIME_TYPES = List.of("image/jpeg", "image/png", "image/webp");
 
     public MediaImageService(MediaImageRepository imageRepository,
             MediaItemRepository mediaItemRepository,
@@ -49,6 +50,12 @@ public class MediaImageService {
         if (imageRepository.existsByMediaItemIdAndImageType(mediaItemId, imageType)) {
             throw new BusinessException(
                     "Ya existe una imagen de tipo " + imageType + " para este item. Elimínala primero.");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType)) {
+            throw new BusinessException(
+                    "Tipo de archivo no permitido. Solo se aceptan: JPEG, PNG y WebP");
         }
 
         Path itemDir = uploadDir.resolve(String.valueOf(mediaItemId));
