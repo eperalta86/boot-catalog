@@ -1,6 +1,6 @@
 # Boot-Catalog (Backend)
 
-API REST para Backlog, un catalogador personal de videojuegos. Permite registrar juegos, asociarlos a plataformas, gestionar imágenes y hacer seguimiento del estado (pendiente, en progreso, completado).
+API REST para Backlog Killer, un catalogador personal de videojuegos. Permite registrar juegos, asociarlos a plataformas, gestionar imágenes y hacer seguimiento del estado (pendiente, en progreso, completado).
 
 ## Tech Stack
 
