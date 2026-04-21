@@ -37,6 +37,21 @@ public class MediaService {
     }
 
     @Transactional
+    public MediaItem update(Long id, String title, Long platformId, MediaStatus status) {
+        MediaItem item = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MediaItem no encontrado: " + id));
+
+        Platform platform = platformRepository.findById(platformId)
+                .orElseThrow(() -> new ResourceNotFoundException("Plataforma no encontrada: " + platformId));
+
+        item.setTitle(title);
+        item.setPlatform(platform);
+        item.setStatus(status);
+
+        return repository.save(item);
+    }
+
+    @Transactional
     public void delete(Long id) {
         MediaItem item = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MediaItem no encontrado: " + id));

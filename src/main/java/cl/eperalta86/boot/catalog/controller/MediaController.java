@@ -2,6 +2,7 @@ package cl.eperalta86.boot.catalog.controller;
 
 import cl.eperalta86.boot.catalog.dto.CreateMediaItemRequest;
 import cl.eperalta86.boot.catalog.dto.MediaItemResponse;
+import cl.eperalta86.boot.catalog.dto.UpdateMediaItemRequest;
 import cl.eperalta86.boot.catalog.service.MediaService;
 import jakarta.validation.Valid;
 
@@ -33,10 +34,19 @@ public class MediaController {
 
    @PostMapping
     public MediaItemResponse create(@Valid @RequestBody CreateMediaItemRequest request) {
-    return MediaItemResponse.from(
-            service.create(request.title(), request.platformId(), request.status())
-    );
-}
+        return MediaItemResponse.from(
+                service.create(request.title(), request.platformId(), request.status())
+        );
+    }
+
+    @PutMapping("/{id}")
+    public MediaItemResponse update(@PathVariable Long id,
+                                    @Valid @RequestBody UpdateMediaItemRequest request) {
+        return MediaItemResponse.from(
+                service.update(id, request.title(), request.platformId(), request.status())
+        );
+    }
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
