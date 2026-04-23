@@ -4,12 +4,14 @@ import cl.eperalta86.boot.catalog.dto.CreateMediaItemRequest;
 import cl.eperalta86.boot.catalog.dto.MediaItemResponse;
 import cl.eperalta86.boot.catalog.dto.UpdateMediaItemRequest;
 import cl.eperalta86.boot.catalog.service.MediaService;
+import cl.eperalta86.boot.catalog.domain.MediaItem.MediaStatus;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/media")
@@ -21,11 +23,15 @@ public class MediaController {
         this.service = service;
     }
 
-   @GetMapping
-    public Page<MediaItemResponse> getAll(Pageable pageable) {
-        return service.findAll(pageable)
-                .map(MediaItemResponse::from);
+    @GetMapping
+    public Page<MediaItemResponse> getAll(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long platformId,
+            @RequestParam(required = false) MediaStatus status,
+            Pageable pageable) {
+        return service.findAll(title, platformId, status, pageable).map(MediaItemResponse::from);
     }
+
 
     @GetMapping("/{id}")
     public MediaItemResponse getById(@PathVariable Long id) {

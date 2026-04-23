@@ -5,11 +5,15 @@ import cl.eperalta86.boot.catalog.domain.MediaItem.MediaStatus;
 import cl.eperalta86.boot.catalog.domain.Platform;
 import cl.eperalta86.boot.catalog.exception.ResourceNotFoundException;
 import cl.eperalta86.boot.catalog.repository.MediaItemRepository;
+import cl.eperalta86.boot.catalog.repository.MediaItemSpecifications;
 import cl.eperalta86.boot.catalog.repository.PlatformRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
+
 
 @Service
 public class MediaService {
@@ -22,10 +26,16 @@ public class MediaService {
         this.platformRepository = platformRepository;
     }
 
-   @Transactional(readOnly = true)
-    public Page<MediaItem> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+     @Transactional(readOnly = true)
+    public Page<MediaItem> findAll(String title, Long platformId, MediaStatus status, Pageable pageable) {
+        Specification<MediaItem> spec = Specification.allOf(
+                MediaItemSpecifications.titleContains(title),
+                MediaItemSpecifications.hasPlatform(platformId),
+                MediaItemSpecifications.hasStatus(status)
+        );
+        return repository.findAll(spec, pageable);
     }
+
 
     @Transactional
     public MediaItem create(String title, Long platformId, MediaStatus status) {
