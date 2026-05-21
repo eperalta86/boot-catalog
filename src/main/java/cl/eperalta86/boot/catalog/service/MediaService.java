@@ -3,6 +3,7 @@ package cl.eperalta86.boot.catalog.service;
 import cl.eperalta86.boot.catalog.domain.MediaItem;
 import cl.eperalta86.boot.catalog.domain.MediaItem.MediaStatus;
 import cl.eperalta86.boot.catalog.domain.Platform;
+import cl.eperalta86.boot.catalog.dto.PlatformStatsResponse;
 import cl.eperalta86.boot.catalog.exception.ResourceNotFoundException;
 import cl.eperalta86.boot.catalog.repository.MediaItemRepository;
 import cl.eperalta86.boot.catalog.repository.MediaItemSpecifications;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.List;
 
 
 
@@ -72,5 +75,14 @@ public class MediaService {
     public MediaItem findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MediaItem no encontrado: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlatformStatsResponse> getStatsByPlatform() {
+        return repository.getStatsByPlatform(
+                MediaStatus.BACKLOG,
+                MediaStatus.IN_PROGRESS,
+                MediaStatus.FINISHED
+        );
     }
 }
